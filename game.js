@@ -1,4 +1,13 @@
-import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS, BOSS_SIZE, BULLET_DIRECTIONS } from './constants.js';
+import {
+  TILE_SIZE,
+  WIDTH,
+  HEIGHT,
+  BULLET_SIZE,
+  MOVEMENT_KEYS,
+  SHOOT_KEYS,
+  BOSS_SIZE,
+  BULLET_DIRECTIONS,
+} from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
@@ -71,7 +80,12 @@ class Game {
     const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
     this.munnBullets.forEach((bullet) => {
-      if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
+      if (
+        bullet.position.x > xRange.from &&
+        bullet.position.x < xRange.to &&
+        bullet.position.y > yRange.from &&
+        bullet.position.y < yRange.to
+      ) {
         this.boss.health -= 3;
         bullet.isDestroyed = true;
         console.log(this.boss.health);
@@ -122,9 +136,13 @@ class Game {
 
   fireBossBullet = () => {
     const directionKeys = Object.keys(BULLET_DIRECTIONS);
-    const directionKey = directionKeys[Math.floor(Math.random() * directionKeys.length)];
+    const directionKey =
+      directionKeys[Math.floor(Math.random() * directionKeys.length)];
     const bulletDirection = BULLET_DIRECTIONS[directionKey];
-    const bossCentre = new Vec2(this.boss.position.x + BOSS_SIZE / 2, this.boss.position.y + BOSS_SIZE / 2);
+    const bossCentre = new Vec2(
+      this.boss.position.x + BOSS_SIZE / 2,
+      this.boss.position.y + BOSS_SIZE / 2
+    );
     const bullet = new Bullet(bossCentre, bulletDirection, '#ed4351');
     this.bossBullets.push(bullet);
   };
@@ -192,5 +210,7 @@ window.startGame = () => {
   const game = new Game(canvas, scale);
   game.init();
 
-  document.getElementById('start-game').style.display = 'none';
+  ['start-game', 'pickle'].forEach(
+    (id) => (document.getElementById(id).style.display = 'none')
+  );
 };
