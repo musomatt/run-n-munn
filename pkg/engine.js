@@ -25,6 +25,93 @@ function _assertClass(instance, klass) {
 }
 /**
 */
+export class Bullet {
+
+    static __wrap(ptr) {
+        const obj = Object.create(Bullet.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_bullet_free(ptr);
+    }
+    /**
+    * @returns {Vec2}
+    */
+    get position() {
+        var ret = wasm.__wbg_get_bullet_position(this.ptr);
+        return Vec2.__wrap(ret);
+    }
+    /**
+    * @param {Vec2} arg0
+    */
+    set position(arg0) {
+        _assertClass(arg0, Vec2);
+        var ptr0 = arg0.ptr;
+        arg0.ptr = 0;
+        wasm.__wbg_set_bullet_position(this.ptr, ptr0);
+    }
+    /**
+    * @returns {boolean}
+    */
+    get is_destroyed() {
+        var ret = wasm.__wbg_get_bullet_is_destroyed(this.ptr);
+        return ret !== 0;
+    }
+    /**
+    * @param {boolean} arg0
+    */
+    set is_destroyed(arg0) {
+        wasm.__wbg_set_bullet_is_destroyed(this.ptr, arg0);
+    }
+    /**
+    * @returns {Vec2}
+    */
+    get direction() {
+        var ret = wasm.__wbg_get_bullet_direction(this.ptr);
+        return Vec2.__wrap(ret);
+    }
+    /**
+    * @param {Vec2} arg0
+    */
+    set direction(arg0) {
+        _assertClass(arg0, Vec2);
+        var ptr0 = arg0.ptr;
+        arg0.ptr = 0;
+        wasm.__wbg_set_bullet_direction(this.ptr, ptr0);
+    }
+    /**
+    */
+    update() {
+        wasm.bullet_update(this.ptr);
+    }
+    /**
+    * @param {Vec2} munn_position
+    * @param {Vec2} direction
+    */
+    constructor(munn_position, direction) {
+        _assertClass(munn_position, Vec2);
+        var ptr0 = munn_position.ptr;
+        munn_position.ptr = 0;
+        _assertClass(direction, Vec2);
+        var ptr1 = direction.ptr;
+        direction.ptr = 0;
+        var ret = wasm.bullet_new(ptr0, ptr1);
+        return Bullet.__wrap(ret);
+    }
+}
+/**
+*/
 export class Munn {
 
     static __wrap(ptr) {
@@ -49,7 +136,7 @@ export class Munn {
     * @returns {Vec2}
     */
     get position() {
-        var ret = wasm.__wbg_get_munn_position(this.ptr);
+        var ret = wasm.__wbg_get_bullet_position(this.ptr);
         return Vec2.__wrap(ret);
     }
     /**
@@ -59,13 +146,13 @@ export class Munn {
         _assertClass(arg0, Vec2);
         var ptr0 = arg0.ptr;
         arg0.ptr = 0;
-        wasm.__wbg_set_munn_position(this.ptr, ptr0);
+        wasm.__wbg_set_bullet_position(this.ptr, ptr0);
     }
     /**
     * @returns {Vec2}
     */
     get velocity() {
-        var ret = wasm.__wbg_get_munn_velocity(this.ptr);
+        var ret = wasm.__wbg_get_bullet_direction(this.ptr);
         return Vec2.__wrap(ret);
     }
     /**
@@ -75,7 +162,7 @@ export class Munn {
         _assertClass(arg0, Vec2);
         var ptr0 = arg0.ptr;
         arg0.ptr = 0;
-        wasm.__wbg_set_munn_velocity(this.ptr, ptr0);
+        wasm.__wbg_set_bullet_direction(this.ptr, ptr0);
     }
     /**
     * @returns {Vec2}
@@ -196,6 +283,14 @@ export class Vec2 {
     is_grounded() {
         var ret = wasm.vec2_is_grounded(this.ptr);
         return ret !== 0;
+    }
+    /**
+    * @param {number} x
+    * @param {number} y
+    */
+    constructor(x, y) {
+        var ret = wasm.vec2_new(x, y);
+        return Vec2.__wrap(ret);
     }
 }
 

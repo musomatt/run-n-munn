@@ -45,6 +45,20 @@ impl Vec2 {
     pub fn is_grounded(&self) -> bool {
         self.y == GROUND_ROW as f32
     }
+
+    #[wasm_bindgen(constructor)]
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+}
+
+impl std::ops::AddAssign for Vec2 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
 }
 
 #[wasm_bindgen]
@@ -106,5 +120,36 @@ impl Munn {
             y: (position.y / TILE_SIZE as f32).floor(),
         };
         tile.is_in_bounds() && !tile.is_grounded()
+    }
+}
+
+#[wasm_bindgen]
+pub struct Bullet {
+    pub position: Vec2,
+    pub is_destroyed: bool,
+    pub direction: Vec2,
+}
+
+#[wasm_bindgen]
+impl Bullet {
+    pub fn update(&mut self) {
+        self.position += self.direction;
+        if self.position.is_in_bounds() {
+            self.is_destroyed = true
+        }
+    }
+
+    #[wasm_bindgen(constructor)]
+    pub fn new(munn_position: Vec2, direction: Vec2) -> Self {
+        let position = Vec2 {
+            x: munn_position.x + TILE_SIZE as f32 / 2.0,
+            y: munn_position.y + TILE_SIZE as f32 / 2.0,
+        };
+
+        Self {
+            position: position,
+            is_destroyed: false,
+            direction,
+        }
     }
 }

@@ -2,6 +2,31 @@
 /* eslint-disable */
 /**
 */
+export class Bullet {
+  free(): void;
+/**
+*/
+  update(): void;
+/**
+* @param {Vec2} munn_position
+* @param {Vec2} direction
+*/
+  constructor(munn_position: Vec2, direction: Vec2);
+/**
+* @returns {Vec2}
+*/
+  direction: Vec2;
+/**
+* @returns {boolean}
+*/
+  is_destroyed: boolean;
+/**
+* @returns {Vec2}
+*/
+  position: Vec2;
+}
+/**
+*/
 export class Munn {
   free(): void;
 /**
@@ -51,6 +76,11 @@ export class Vec2 {
 */
   is_grounded(): boolean;
 /**
+* @param {number} x
+* @param {number} y
+*/
+  constructor(x: number, y: number);
+/**
 * @returns {number}
 */
   x: number;
@@ -71,11 +101,8 @@ export interface InitOutput {
   readonly __wbg_set_vec2_y: (a: number, b: number) => void;
   readonly vec2_is_in_bounds: (a: number) => number;
   readonly vec2_is_grounded: (a: number) => number;
+  readonly vec2_new: (a: number, b: number) => number;
   readonly __wbg_munn_free: (a: number) => void;
-  readonly __wbg_get_munn_position: (a: number) => number;
-  readonly __wbg_set_munn_position: (a: number, b: number) => void;
-  readonly __wbg_get_munn_velocity: (a: number) => number;
-  readonly __wbg_set_munn_velocity: (a: number, b: number) => void;
   readonly __wbg_get_munn_gravity: (a: number) => number;
   readonly __wbg_set_munn_gravity: (a: number, b: number) => void;
   readonly __wbg_get_munn_is_jumping: (a: number) => number;
@@ -84,6 +111,19 @@ export interface InitOutput {
   readonly munn_move_by: (a: number, b: number, c: number) => void;
   readonly munn_update: (a: number, b: number) => void;
   readonly munn_can_move_to: (a: number, b: number) => number;
+  readonly __wbg_bullet_free: (a: number) => void;
+  readonly __wbg_get_bullet_position: (a: number) => number;
+  readonly __wbg_set_bullet_position: (a: number, b: number) => void;
+  readonly __wbg_get_bullet_is_destroyed: (a: number) => number;
+  readonly __wbg_set_bullet_is_destroyed: (a: number, b: number) => void;
+  readonly __wbg_get_bullet_direction: (a: number) => number;
+  readonly __wbg_set_bullet_direction: (a: number, b: number) => void;
+  readonly bullet_update: (a: number) => void;
+  readonly bullet_new: (a: number, b: number) => number;
+  readonly __wbg_set_munn_position: (a: number, b: number) => void;
+  readonly __wbg_set_munn_velocity: (a: number, b: number) => void;
+  readonly __wbg_get_munn_position: (a: number) => number;
+  readonly __wbg_get_munn_velocity: (a: number) => number;
 }
 
 /**
