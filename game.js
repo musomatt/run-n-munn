@@ -1,4 +1,4 @@
-import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE } from './constants.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS } from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
@@ -93,57 +93,50 @@ class Game {
     }
   };
 
+  actionKeys = () => {
+    const keys = Object.keys(this.downKeys);
+    var activeDownKeys = keys.filter((key) => this.downKeys[key]);
+    if (MOVEMENT_KEYS.some((r) => activeDownKeys.includes(r))) {
+      if (activeDownKeys.includes('a')) {
+        if (activeDownKeys.includes('w')) {
+          this.munn.move(-TILE_SIZE, -TILE_SIZE);
+        } else {
+          this.munn.move(-TILE_SIZE, 0);
+        }
+      } else if (activeDownKeys.includes('d')) {
+        if (activeDownKeys.includes('w')) {
+          this.munn.move(TILE_SIZE, -TILE_SIZE);
+        } else {
+          this.munn.move(TILE_SIZE, 0);
+        }
+      } else if (activeDownKeys.includes('w')) {
+        this.munn.move(0, -TILE_SIZE);
+      } else if (activeDownKeys.includes('s')) {
+        this.munn.move(0, TILE_SIZE);
+      }
+    }
+    if (SHOOT_KEYS.some((r) => activeDownKeys.includes(r))) {
+      this.fireBullet();
+    }
+  };
+
   init = () => {
     document.addEventListener('keydown', (event) => {
       event.stopPropagation();
       event.preventDefault();
-      switch (event.key) {
-        case 'ArrowLeft':
-          this.downKeys.ArrowLeft = true;
-          this.fireBullet();
-          break;
-        case 'ArrowRight':
-          this.downKeys.ArrowRight = true;
-          this.fireBullet();
-          break;
-        case 'ArrowUp':
-          this.downKeys.ArrowUp = true;
-          this.fireBullet();
-          break;
-        case 'ArrowDown':
-          this.downKeys.ArrowDown = true;
-          this.fireBullet();
-          break;
-        case 'a':
-          this.munn.move(-TILE_SIZE, 0);
-          break;
-        case 'd':
-          this.munn.move(TILE_SIZE, 0);
-          break;
-        case 'w':
-          this.munn.move(0, -TILE_SIZE);
-          break;
-        case 's':
-          this.munn.move(0, TILE_SIZE);
-          break;
+      const actionKeys = MOVEMENT_KEYS.concat(SHOOT_KEYS);
+      if (actionKeys.includes(event.key)) {
+        this.downKeys[event.key] = true;
+        this.actionKeys();
       }
     });
     document.addEventListener('keyup', (event) => {
       event.stopPropagation();
       event.preventDefault();
-      switch (event.key) {
-        case 'ArrowLeft':
-          this.downKeys.ArrowLeft = false;
-          break;
-        case 'ArrowRight':
-          this.downKeys.ArrowRight = false;
-          break;
-        case 'ArrowUp':
-          this.downKeys.ArrowUp = false;
-          break;
-        case 'ArrowDown':
-          this.downKeys.ArrowDown = false;
-          break;
+      const actionKeys = MOVEMENT_KEYS.concat(SHOOT_KEYS);
+
+      if (actionKeys.includes(event.key)) {
+        this.downKeys[event.key] = false;
       }
     });
     requestAnimationFrame(this.loop);
