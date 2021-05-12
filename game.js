@@ -1,74 +1,8 @@
-import { Grid, GROUND, SPACE } from './grid.js';
-import { isInBounds } from './maths.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE } from './constants.js';
+import { Bullet } from './bullet.js';
+import { Munn } from './munn.js';
+import { Boss } from './boss.js';
 import { Vec2 } from './vec2.js';
-import { SpriteLoader } from './sprite.js';
-
-const WIDTH = 1200;
-const HEIGHT = 675;
-const TILE_SIZE = 25;
-
-class Munn {
-  constructor() {
-    this.position = new Vec2(0, 0);
-    this.velocity = new Vec2(0, 0);
-    this.gravity = new Vec2(0, 200);
-    this.isJumping = false;
-
-    this.sprite = new SpriteLoader({
-      speed: 25,
-      frameSize: new Vec2(100, 100),
-      totalFrames: 2,
-    });
-    this.sprite.load('munn-sprite.png');
-  }
-
-  canMove = (newPosition) => {
-    const tileX = Math.floor(newPosition.x / TILE_SIZE);
-    const tileY = Math.floor(newPosition.y / TILE_SIZE);
-
-    if (
-      !isInBounds(tileX, 0, Grid[0].length - 1) ||
-      !isInBounds(tileY, 0, Grid.length - 1)
-    ) {
-      return false;
-    }
-
-    switch (Grid[tileY][tileX]) {
-      case GROUND:
-        return false;
-      case SPACE:
-        return true;
-    }
-  };
-
-  move = (dx, dy) => {
-    const newPosition = this.position.clone().add(new Vec2(dx, dy));
-
-    if (this.canMove(newPosition)) {
-      this.position = newPosition;
-    }
-  };
-
-  update = (dt) => {
-    this.velocity.add(new Vec2(0, this.gravity.y * dt));
-
-    let newPosition = new Vec2(
-      this.position.x + this.velocity.x * dt,
-      this.position.y + this.velocity.y * dt
-    );
-
-    if (!this.canMove(newPosition)) {
-      newPosition = this.position;
-      this.velocity = new Vec2(0, 0);
-    }
-
-    this.position.copy(newPosition);
-  };
-
-  draw = (ctx) => {
-    this.sprite.draw(ctx);
-  };
-}
 
 class Game {
   constructor(canvas, scale) {
@@ -76,15 +10,27 @@ class Game {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.scale(scale, scale);
     this.munn = new Munn();
+    this.boss = new Boss();
+    this.downKeys = {};
+    this.bullets = [];
   }
 
   update = (dt) => {
     this.munn.update(dt);
+    this.bullets.forEach((bullet) => bullet.move());
   };
 
   render = () => {
     this.ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.munn.draw(this.ctx);
+    this.boss.draw(this.ctx);
+    this.bullets.forEach((bullet, index, object) => {
+      if (bullet.isDestroyed) {
+        object.splice(index, 1);
+      } else {
+        bullet.draw(this.ctx);
+      }
+    });
   };
 
   loop = (last = -1) => {
@@ -104,22 +50,67 @@ class Game {
     requestAnimationFrame(() => this.loop(last));
   };
 
+  keyToDirection = () => {
+    if (this.downKeys?.ArrowLeft) {
+      return new Vec2(-BULLET_SIZE, 0);
+    }
+    if (this.downKeys?.ArrowRight) {
+      return new Vec2(BULLET_SIZE, 0);
+    }
+  };
+
   init = () => {
     document.addEventListener('keydown', (event) => {
       event.stopPropagation();
       event.preventDefault();
       switch (event.key) {
         case 'ArrowLeft':
-          this.munn.move(-TILE_SIZE, 0);
+          this.downKeys.ArrowLeft = true;
           break;
         case 'ArrowRight':
-          this.munn.move(TILE_SIZE, 0);
+          this.downKeys.ArrowRight = true;
+
+          const bullet = new Bullet(
+            this.munn.position.clone(),
+            this.keyToDirection()
+          );
+          this.bullets.push(bullet);
           break;
         case 'ArrowUp':
-          this.munn.move(0, -TILE_SIZE);
+          this.downKeys.ArrowUp = true;
           break;
         case 'ArrowDown':
+          this.downKeys.ArrowDown = true;
+          break;
+        case 'a':
+          this.munn.move(-TILE_SIZE, 0);
+          break;
+        case 'd':
+          this.munn.move(TILE_SIZE, 0);
+          break;
+        case 'w':
+          this.munn.move(0, -TILE_SIZE);
+          break;
+        case 's':
           this.munn.move(0, TILE_SIZE);
+          break;
+      }
+    });
+    document.addEventListener('keyup', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      switch (event.key) {
+        case 'ArrowLeft':
+          this.downKeys.ArrowLeft = false;
+          break;
+        case 'ArrowRight':
+          this.downKeys.ArrowRight = false;
+          break;
+        case 'ArrowUp':
+          this.downKeys.ArrowUp = false;
+          break;
+        case 'ArrowDown':
+          this.downKeys.ArrowDown = false;
           break;
       }
     });
