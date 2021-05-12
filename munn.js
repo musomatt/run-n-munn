@@ -1,6 +1,6 @@
-import { TILE_SIZE } from './constants.js';
+import { TILE_SIZE, WIDTH } from './constants.js';
 import { Grid, GROUND, SPACE } from './grid.js';
-import { isInBounds } from './maths.js';
+import { isInBounds, randomNumber } from './maths.js';
 import { Vec2 } from './vec2.js';
 import { SpriteLoader } from './sprite.js';
 
@@ -11,13 +11,13 @@ const animationSettings = {
 
 export class Munn {
   constructor() {
-    this.position = new Vec2(0, 0);
+    this.position = new Vec2(randomNumber(0, WIDTH), 500);
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
     this.health = 15;
     this.fillStyle = '#333';
-
+    this.isMoving = false;
     this.loadAnimations();
   }
 
@@ -60,6 +60,20 @@ export class Munn {
     }
   };
 
+  approach = (goal, current, dt) => {
+    const difference = goal - current;
+
+    if (difference > dt) {
+      return difference + dt;
+    }
+
+    if (difference < -dt) {
+      return different - dt;
+    }
+
+    return goal;
+  };
+
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
 
@@ -68,6 +82,9 @@ export class Munn {
     if (!this.canMove(newPosition)) {
       newPosition = this.position;
       this.velocity = new Vec2(0, 0);
+      this.isMoving = false;
+    } else {
+      this.isMoving = true;
     }
 
     this.position.copy(newPosition);
@@ -79,6 +96,11 @@ export class Munn {
 
     // this.animateIdle.draw(ctx);
     this.animateRun.draw(ctx);
+    if (this.isMoving) {
+      this.animateRun.draw(ctx, this.position);
+    } else {
+      this.animateIdle.draw(ctx, this.position);
+    }
   };
 
   takeHit = (value) => {

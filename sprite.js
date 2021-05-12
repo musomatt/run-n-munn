@@ -30,7 +30,7 @@ export class SpriteLoader {
     this.image.src = location;
   }
 
-  draw(ctx) {
+  draw(ctx, position = new Vec2(0, 0)) {
     if (this.df === this.speed) {
       const nextFrame = this.currentFrame + 1;
       this.currentFrame = nextFrame < this.totalFrames ? nextFrame : 0;
@@ -43,8 +43,8 @@ export class SpriteLoader {
       0,
       this.frameSize.x,
       this.frameSize.y,
-      0,
-      0,
+      position.x,
+      position.y,
       this.frameSize.x,
       this.frameSize.y
     );

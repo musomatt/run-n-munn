@@ -126,6 +126,7 @@ class Game {
   fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
+      this.audio.playCucmberThrow();
       const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
       this.munnBullets.push(bullet);
     }
@@ -205,14 +206,14 @@ class Game {
     const noteOnMidi = 144;
     const noteOffMidi = 128;
     const midiToKey = {
-      42: 'w',
-      36: 'a',
-      37: 's',
-      38: 'd',
-      52: 'ArrowUp',
-      46: 'ArrowLeft',
-      48: 'ArrowRight',
-      47: 'ArrowDown',
+      60: 'a',
+      61: 'w',
+      62: 's',
+      63: 'd',
+      64: 'ArrowLeft',
+      65: 'ArrowUp',
+      66: 'ArrowDown',
+      67: 'ArrowRight',
     };
     const arrowKey = midiToKey[message.data[1]];
     if (message.data[0] === noteOnMidi && arrowKey) {
@@ -220,7 +221,6 @@ class Game {
       this.actionKeys();
     } else if (message.data[0] === noteOffMidi && arrowKey) {
       this.downKeys[arrowKey] = false;
-      console.log(this.downKeys);
     }
   }
 
