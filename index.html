@@ -3,10 +3,7 @@
   <head>
     <title>run n munn</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet" />
     <style type="text/css">
       * {
         box-sizing: border-box;
@@ -34,7 +31,14 @@
         padding: 1rem 3rem;
       }
 
-      div {
+      #game-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      #start-game {
         position: fixed;
         top: 0px;
         right: 0px;
@@ -67,13 +71,15 @@
     <script type="module" src="game.js"></script>
   </head>
   <body>
-    <div id="midiInfo">
-      Midi Device:
-      <select id="selectMidiDevice">
-        <option>Choose device</option>
-      </select>
+    <div id="game-wrapper">
+      <div id="midiInfo">
+        Midi Device:
+        <select id="selectMidiDevice">
+          <option>Choose device</option>
+        </select>
+      </div>
+      <canvas></canvas>
     </div>
-    <canvas></canvas>
     <div id="start-game">
       <h1>Run 'n' Munn</h1>
       <button onclick="javascript:startGame();">Start Game</button>
