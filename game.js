@@ -1,4 +1,4 @@
-import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS } from './constants.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS, BOSS_SIZE } from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
@@ -18,12 +18,15 @@ class Game {
   update = (dt) => {
     this.munn.update(dt);
     this.bullets.forEach((bullet) => bullet.move());
+    this.checkBulletHitBoss();
   };
 
   render = () => {
     this.ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.munn.draw(this.ctx);
-    this.boss.draw(this.ctx);
+    if (this.boss.health > 0) {
+      this.boss.draw(this.ctx);
+    }
     this.bullets.forEach((bullet, index, object) => {
       if (bullet.isDestroyed) {
         object.splice(index, 1);
@@ -48,6 +51,19 @@ class Game {
     this.render(this.canvas);
 
     requestAnimationFrame(() => this.loop(last));
+  };
+
+  checkBulletHitBoss = () => {
+    const bossPosition = this.boss.position;
+    const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
+    const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
+    this.bullets.forEach((bullet) => {
+      if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
+        this.boss.health -= 3;
+        bullet.isDestroyed = true;
+        console.log(this.boss.health);
+      }
+    });
   };
 
   keyToDirection = () => {
