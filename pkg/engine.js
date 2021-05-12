@@ -1,6 +1,26 @@
 
 let wasm;
 
+const heap = new Array(32).fill(undefined);
+
+heap.push(undefined, null, true, false);
+
+function getObject(idx) { return heap[idx]; }
+
+let heap_next = heap.length;
+
+function dropObject(idx) {
+    if (idx < 36) return;
+    heap[idx] = heap_next;
+    heap_next = idx;
+}
+
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
+}
+
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
 cachedTextDecoder.decode();
@@ -22,6 +42,31 @@ function _assertClass(instance, klass) {
         throw new Error(`expected instance of ${klass.name}`);
     }
     return instance.ptr;
+}
+
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
+let stack_pointer = 32;
+
+function addBorrowedObject(obj) {
+    if (stack_pointer == 1) throw new Error('out of js stack');
+    heap[--stack_pointer] = obj;
+    return stack_pointer;
+}
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        wasm.__wbindgen_exn_store(addHeapObject(e));
+    }
 }
 /**
 */
@@ -108,6 +153,77 @@ export class Bullet {
         direction.ptr = 0;
         var ret = wasm.bullet_new(ptr0, ptr1);
         return Bullet.__wrap(ret);
+    }
+}
+/**
+*/
+export class Bullets {
+
+    static __wrap(ptr) {
+        const obj = Object.create(Bullets.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_bullets_free(ptr);
+    }
+    /**
+    */
+    constructor() {
+        var ret = wasm.bullets_new();
+        return Bullets.__wrap(ret);
+    }
+    /**
+    * @param {Vec2} munn_position
+    * @param {Vec2} direction
+    */
+    push(munn_position, direction) {
+        _assertClass(munn_position, Vec2);
+        var ptr0 = munn_position.ptr;
+        munn_position.ptr = 0;
+        _assertClass(direction, Vec2);
+        var ptr1 = direction.ptr;
+        direction.ptr = 0;
+        wasm.bullets_push(this.ptr, ptr0, ptr1);
+    }
+    /**
+    */
+    update() {
+        wasm.bullets_update(this.ptr);
+    }
+    /**
+    * @param {number} from_x
+    * @param {number} to_x
+    * @param {number} from_y
+    * @param {number} to_y
+    * @param {Function} action
+    */
+    on_collision(from_x, to_x, from_y, to_y, action) {
+        try {
+            wasm.bullets_on_collision(this.ptr, from_x, to_x, from_y, to_y, addBorrowedObject(action));
+        } finally {
+            heap[stack_pointer++] = undefined;
+        }
+    }
+    /**
+    * @param {Function} action
+    */
+    for_each(action) {
+        try {
+            wasm.bullets_for_each(this.ptr, addBorrowedObject(action));
+        } finally {
+            heap[stack_pointer++] = undefined;
+        }
     }
 }
 /**
@@ -331,6 +447,21 @@ async function init(input) {
     }
     const imports = {};
     imports.wbg = {};
+    imports.wbg.__wbg_bullet_new = function(arg0) {
+        var ret = Bullet.__wrap(arg0);
+        return addHeapObject(ret);
+    };
+    imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
+        takeObject(arg0);
+    };
+    imports.wbg.__wbg_call_ba36642bd901572b = function() { return handleError(function (arg0, arg1) {
+        var ret = getObject(arg0).call(getObject(arg1));
+        return addHeapObject(ret);
+    }, arguments) };
+    imports.wbg.__wbg_call_3fc07b7d5fc9022d = function() { return handleError(function (arg0, arg1, arg2) {
+        var ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
+        return addHeapObject(ret);
+    }, arguments) };
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));
     };

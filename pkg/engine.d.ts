@@ -27,6 +27,34 @@ export class Bullet {
 }
 /**
 */
+export class Bullets {
+  free(): void;
+/**
+*/
+  constructor();
+/**
+* @param {Vec2} munn_position
+* @param {Vec2} direction
+*/
+  push(munn_position: Vec2, direction: Vec2): void;
+/**
+*/
+  update(): void;
+/**
+* @param {number} from_x
+* @param {number} to_x
+* @param {number} from_y
+* @param {number} to_y
+* @param {Function} action
+*/
+  on_collision(from_x: number, to_x: number, from_y: number, to_y: number, action: Function): void;
+/**
+* @param {Function} action
+*/
+  for_each(action: Function): void;
+}
+/**
+*/
 export class Munn {
   free(): void;
 /**
@@ -120,10 +148,17 @@ export interface InitOutput {
   readonly __wbg_set_bullet_direction: (a: number, b: number) => void;
   readonly bullet_update: (a: number) => void;
   readonly bullet_new: (a: number, b: number) => number;
+  readonly __wbg_bullets_free: (a: number) => void;
+  readonly bullets_new: () => number;
+  readonly bullets_push: (a: number, b: number, c: number) => void;
+  readonly bullets_update: (a: number) => void;
+  readonly bullets_on_collision: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly bullets_for_each: (a: number, b: number) => void;
   readonly __wbg_set_munn_position: (a: number, b: number) => void;
   readonly __wbg_set_munn_velocity: (a: number, b: number) => void;
   readonly __wbg_get_munn_position: (a: number) => number;
   readonly __wbg_get_munn_velocity: (a: number) => number;
+  readonly __wbindgen_exn_store: (a: number) => void;
 }
 
 /**

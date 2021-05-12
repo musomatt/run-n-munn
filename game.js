@@ -2,13 +2,12 @@ import {
   TILE_SIZE,
   WIDTH,
   HEIGHT,
-  BULLET_SIZE,
   MOVEMENT_KEYS,
   SHOOT_KEYS,
   BOSS_SIZE,
   BULLET_DIRECTIONS,
 } from './constants.js';
-import { Bullet } from './bullet.js';
+import { Bullets } from './bullets.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
 import { Vec2 } from './vec2.js';
@@ -24,8 +23,8 @@ class Game {
     this.boss = new Boss();
     this.downKeys = {};
     this.audio = new Audio();
-    this.munnBullets = [];
-    this.bossBullets = [];
+    this.munnBullets = new Bullets();
+    this.bossBullets = new Bullets('#ed4351');
     this.stopBulletCountdown = 5;
     this.access;
   }
@@ -33,7 +32,7 @@ class Game {
   update = (dt) => {
     this.munn.update(dt);
     this.boss.update(dt);
-    this.munnBullets.forEach((bullet) => bullet.move());
+    this.munnBullets.update();
     this.checkBulletHitBoss();
     if (this.stopBulletCountdown === 0) {
       this.fireBossBullet();
@@ -41,7 +40,7 @@ class Game {
     } else {
       this.stopBulletCountdown--;
     }
-    this.bossBullets.forEach((bullet) => bullet.move());
+    this.bossBullets.update();
   };
 
   render = () => {
@@ -50,14 +49,8 @@ class Game {
     if (this.boss.health > 0) {
       this.boss.draw(this.ctx);
     }
-    this.munnBullets.forEach((bullet, index, object) => {
-      if (bullet.inner.is_destroyed) {
-        object.splice(index, 1);
-      } else {
-        bullet.draw(this.ctx);
-      }
-    });
-    this.bossBullets.forEach((bullet) => bullet.draw(this.ctx));
+    this.munnBullets.draw(this.ctx);
+    this.bossBullets.draw(this.ctx);
   };
 
   loop = (last = -1) => {
@@ -81,18 +74,10 @@ class Game {
     const bossPosition = this.boss.position;
     const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
-    this.munnBullets.forEach((bullet) => {
-      if (
-        bullet.position.x > xRange.from &&
-        bullet.position.x < xRange.to &&
-        bullet.position.y > yRange.from &&
-        bullet.position.y < yRange.to
-      ) {
-        this.audio.playPickleCollision();
-        this.boss.health -= 3;
-        bullet.inner.is_destroyed = true;
-        console.log(this.boss.health);
-      }
+    this.munnBullets.onCollision(xRange, yRange, () => {
+      this.audio.playPickleCollision();
+      this.boss.health -= 3;
+      console.log(this.boss.health);
     });
   };
 
@@ -132,8 +117,7 @@ class Game {
   fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
-      const bullet = new Bullet(this.munn.inner.position, bulletDirection);
-      this.munnBullets.push(bullet);
+      this.munnBullets.push(this.munn.inner.position, bulletDirection);
     }
   };
 
@@ -146,8 +130,7 @@ class Game {
       this.boss.position.x + BOSS_SIZE / 2,
       this.boss.position.y + BOSS_SIZE / 2
     );
-    const bullet = new Bullet(bossCentre, bulletDirection, '#ed4351');
-    this.bossBullets.push(bullet);
+    this.bossBullets.push(bossCentre, bulletDirection);
   };
 
   actionKeys = () => {

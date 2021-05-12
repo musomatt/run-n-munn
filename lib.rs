@@ -124,6 +124,7 @@ impl Munn {
 }
 
 #[wasm_bindgen]
+#[derive(Default, Clone, Copy)]
 pub struct Bullet {
     pub position: Vec2,
     pub is_destroyed: bool,
@@ -148,6 +149,60 @@ impl Bullet {
             },
             is_destroyed: false,
             direction,
+        }
+    }
+}
+
+#[wasm_bindgen]
+pub struct Bullets {
+    bullets: Vec<Bullet>,
+}
+
+#[wasm_bindgen]
+impl Bullets {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self {
+            bullets: Vec::new(),
+        }
+    }
+
+    pub fn push(&mut self, munn_position: Vec2, direction: Vec2) {
+        self.bullets.push(Bullet::new(munn_position, direction));
+    }
+
+    pub fn update(&mut self) {
+        self.bullets.iter_mut().for_each(|bullet| bullet.update());
+    }
+
+    pub fn on_collision(
+        &mut self,
+        from_x: f32,
+        to_x: f32,
+        from_y: f32,
+        to_y: f32,
+        action: &js_sys::Function,
+    ) {
+        for bullet in self.bullets.iter_mut() {
+            let this = JsValue::null();
+            if bullet.position.x > from_x
+                && bullet.position.x < to_x
+                && bullet.position.y > from_y
+                && bullet.position.y < to_y
+            {
+                bullet.is_destroyed = true;
+                let _ = action.call0(&this);
+            }
+        }
+
+        self.bullets.retain(|bullet| !bullet.is_destroyed);
+    }
+
+    pub fn for_each(&mut self, action: &js_sys::Function) {
+        let this = JsValue::null();
+        for &bullet in &self.bullets {
+            let bullet = JsValue::from(bullet);
+            let _ = action.call1(&this, &bullet);
         }
     }
 }
