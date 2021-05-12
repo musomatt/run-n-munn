@@ -39,7 +39,7 @@ pub struct Vec2 {
 #[wasm_bindgen]
 impl Vec2 {
     pub fn is_in_bounds(&self) -> bool {
-        self.x >= 0.0 && self.x < NUM_ROWS as f32 && self.y >= 0.0 && self.y < NUM_COLS as f32
+        self.x >= 0.0 && self.x < NUM_COLS as f32 && self.y >= 0.0 && self.y < NUM_ROWS as f32
     }
 
     pub fn is_grounded(&self) -> bool {
