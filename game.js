@@ -1,6 +1,7 @@
 import { Grid, GROUND, SPACE } from './grid.js';
 import { isInBounds } from './maths.js';
 import { Vec2 } from './vec2.js';
+import { SpriteLoader } from './sprite.js';
 
 const WIDTH = 1200;
 const HEIGHT = 675;
@@ -12,6 +13,13 @@ class Munn {
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
+
+    this.sprite = new SpriteLoader({
+      speed: 25,
+      frameSize: new Vec2(100, 100),
+      totalFrames: 2,
+    });
+    this.sprite.load('munn-sprite.png');
   }
 
   canMove = (newPosition) => {
@@ -35,6 +43,7 @@ class Munn {
 
   move = (dx, dy) => {
     const newPosition = this.position.clone().add(new Vec2(dx, dy));
+
     if (this.canMove(newPosition)) {
       this.position = newPosition;
     }
@@ -42,6 +51,7 @@ class Munn {
 
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
+
     let newPosition = new Vec2(
       this.position.x + this.velocity.x * dt,
       this.position.y + this.velocity.y * dt
@@ -51,12 +61,12 @@ class Munn {
       newPosition = this.position;
       this.velocity = new Vec2(0, 0);
     }
+
     this.position.copy(newPosition);
   };
 
   draw = (ctx) => {
-    ctx.fillStyle = '#333';
-    ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
+    this.sprite.draw(ctx);
   };
 }
 
