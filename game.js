@@ -23,6 +23,7 @@ class Game {
 
   update = (dt) => {
     this.munn.update(dt);
+    this.boss.update(dt);
     this.munnBullets.forEach((bullet) => bullet.move());
     this.checkBulletHit(this.boss, this.munnBullets);
     this.checkBulletHit(this.munn, this.bossBullets);
