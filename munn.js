@@ -27,6 +27,7 @@ export class Munn {
 
     this.animateRun = new SpriteLoader({
       ...animationSettings,
+      speed: 5,
       totalFrames: 4,
     });
 
