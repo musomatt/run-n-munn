@@ -52,10 +52,44 @@ class Game {
 
   keyToDirection = () => {
     if (this.downKeys?.ArrowLeft) {
+      if (this.downKeys?.ArrowRight) {
+        return false;
+      }
+      if (this.downKeys?.ArrowUp) {
+        return new Vec2(-BULLET_SIZE, -BULLET_SIZE);
+      }
+      if (this.downKeys?.ArrowDown) {
+        return new Vec2(-BULLET_SIZE, BULLET_SIZE);
+      }
       return new Vec2(-BULLET_SIZE, 0);
     }
     if (this.downKeys?.ArrowRight) {
+      if (this.downKeys?.ArrowLeft) {
+        return false;
+      }
+      if (this.downKeys?.ArrowUp) {
+        return new Vec2(BULLET_SIZE, -BULLET_SIZE);
+      }
+      if (this.downKeys?.ArrowDown) {
+        return new Vec2(BULLET_SIZE, BULLET_SIZE);
+      }
       return new Vec2(BULLET_SIZE, 0);
+    }
+    if (this.downKeys?.ArrowDown) {
+      return new Vec2(0, BULLET_SIZE);
+    }
+    if (this.downKeys?.ArrowUp) {
+      return new Vec2(0, -BULLET_SIZE);
+    }
+  };
+
+  fireBullet = () => {
+    const bulletDirection = this.keyToDirection();
+    console.log(bulletDirection);
+
+    if (bulletDirection) {
+      const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
+      this.bullets.push(bullet);
     }
   };
 
@@ -66,21 +100,19 @@ class Game {
       switch (event.key) {
         case 'ArrowLeft':
           this.downKeys.ArrowLeft = true;
+          this.fireBullet();
           break;
         case 'ArrowRight':
           this.downKeys.ArrowRight = true;
-
-          const bullet = new Bullet(
-            this.munn.position.clone(),
-            this.keyToDirection()
-          );
-          this.bullets.push(bullet);
+          this.fireBullet();
           break;
         case 'ArrowUp':
           this.downKeys.ArrowUp = true;
+          this.fireBullet();
           break;
         case 'ArrowDown':
           this.downKeys.ArrowDown = true;
+          this.fireBullet();
           break;
         case 'a':
           this.munn.move(-TILE_SIZE, 0);
