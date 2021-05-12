@@ -27,8 +27,8 @@ export class Munn {
 
     this.animateRun = new SpriteLoader({
       ...animationSettings,
-      speed: 5,
-      totalFrames: 4,
+      speed: 3,
+      totalFrames: 7,
     });
 
     this.animateIdle.load('munn-idle.png');
