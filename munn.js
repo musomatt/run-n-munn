@@ -15,6 +15,7 @@ export class Munn {
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
+    this.isMoving = false;
 
     this.loadAnimations();
   }
@@ -61,6 +62,20 @@ export class Munn {
     }
   };
 
+  approach = (goal, current, dt) => {
+    const difference = goal - current;
+
+    if (difference > dt) {
+      return difference + dt;
+    }
+
+    if (difference < -dt) {
+      return different - dt;
+    }
+
+    return goal;
+  };
+
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
 
@@ -72,12 +87,19 @@ export class Munn {
     if (!this.canMove(newPosition)) {
       newPosition = this.position;
       this.velocity = new Vec2(0, 0);
+      this.isMoving = false;
+    } else {
+      this.isMoving = true;
     }
 
     this.position.copy(newPosition);
   };
 
   draw = (ctx) => {
-    this.animateRun.draw(ctx, this.position);
+    if (this.isMoving) {
+      this.animateRun.draw(ctx, this.position);
+    } else {
+      this.animateIdle.draw(ctx, this.position);
+    }
   };
 }
