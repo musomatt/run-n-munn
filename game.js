@@ -1,13 +1,4 @@
-import {
-  TILE_SIZE,
-  WIDTH,
-  HEIGHT,
-  BULLET_SIZE,
-  MOVEMENT_KEYS,
-  SHOOT_KEYS,
-  BOSS_SIZE,
-  BULLET_DIRECTIONS,
-} from './constants.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS, BOSS_SIZE, BULLET_DIRECTIONS } from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
@@ -82,15 +73,9 @@ class Game {
     const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
     this.munnBullets.forEach((bullet) => {
-      if (
-        bullet.position.x > xRange.from &&
-        bullet.position.x < xRange.to &&
-        bullet.position.y > yRange.from &&
-        bullet.position.y < yRange.to
-      ) {
+      if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
         this.boss.health -= 3;
         bullet.isDestroyed = true;
-        console.log(this.boss.health);
       }
     });
   };
@@ -138,13 +123,9 @@ class Game {
 
   fireBossBullet = () => {
     const directionKeys = Object.keys(BULLET_DIRECTIONS);
-    const directionKey =
-      directionKeys[Math.floor(Math.random() * directionKeys.length)];
+    const directionKey = directionKeys[Math.floor(Math.random() * directionKeys.length)];
     const bulletDirection = BULLET_DIRECTIONS[directionKey];
-    const bossCentre = new Vec2(
-      this.boss.position.x + BOSS_SIZE / 2,
-      this.boss.position.y + BOSS_SIZE / 2
-    );
+    const bossCentre = new Vec2(this.boss.position.x + BOSS_SIZE / 2, this.boss.position.y + BOSS_SIZE / 2);
     const bullet = new Bullet(bossCentre, bulletDirection, '#ed4351');
     this.bossBullets.push(bullet);
   };
@@ -180,11 +161,7 @@ class Game {
     this.midiAccess = access;
     if (access.inputs && access.inputs.size > 0) {
       const inputs = access.inputs.values();
-      for (
-        let input = inputs.next();
-        input && !input.done;
-        input = inputs.next()
-      ) {
+      for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
         const opt = document.createElement('option');
         opt.text = input.value.name;
         document.getElementById('selectMidiDevice').add(opt);
@@ -193,21 +170,13 @@ class Game {
 
     access.onstatechange = (e) => {
       const midiDropdown = document.getElementById('selectMidiDevice');
-      const currentOptions = Array.from(midiDropdown.options).map(
-        (option) => option.value
-      );
-      if (
-        e.port.state === 'connected' &&
-        !currentOptions.includes(e.port.name)
-      ) {
+      const currentOptions = Array.from(midiDropdown.options).map((option) => option.value);
+      if (e.port.state === 'connected' && !currentOptions.includes(e.port.name)) {
         const opt = document.createElement('option');
         opt.text = e.port.name;
         midiDropdown.add(opt);
       }
-      if (
-        e.port.state === 'disconnected' &&
-        currentOptions.includes(e.port.name)
-      ) {
+      if (e.port.state === 'disconnected' && currentOptions.includes(e.port.name)) {
         const disconnectedDeviceIndex = currentOptions.indexOf(e.port.name);
         midiDropdown.remove(disconnectedDeviceIndex);
       }
@@ -215,8 +184,7 @@ class Game {
   }
 
   onMidiAccessFailure(error) {
-    document.getElementById('midiInfo').innerHTML =
-      'Please use Google Chrome if you would like to use a MIDI device.';
+    document.getElementById('midiInfo').innerHTML = 'Please use Google Chrome if you would like to use a MIDI device.';
     console.log('Oopsy woopsy', error.code);
   }
 
@@ -224,14 +192,14 @@ class Game {
     const noteOnMidi = 144;
     const noteOffMidi = 128;
     const midiToKey = {
-      42: 'w',
-      36: 'a',
-      37: 's',
-      38: 'd',
-      52: 'ArrowUp',
-      46: 'ArrowLeft',
-      48: 'ArrowRight',
-      47: 'ArrowDown',
+      60: 'a',
+      61: 'w',
+      62: 's',
+      63: 'd',
+      64: 'ArrowLeft',
+      65: 'ArrowUp',
+      66: 'ArrowDown',
+      67: 'ArrowRight',
     };
     const arrowKey = midiToKey[message.data[1]];
     if (message.data[0] === noteOnMidi && arrowKey) {
@@ -239,48 +207,30 @@ class Game {
       this.actionKeys();
     } else if (message.data[0] === noteOffMidi && arrowKey) {
       this.downKeys[arrowKey] = false;
-      console.log(this.downKeys);
     }
   }
 
   init = () => {
     try {
-      navigator
-        .requestMIDIAccess()
-        .then((access) => this.onMidiAccessSuccess(access));
+      navigator.requestMIDIAccess().then((access) => this.onMidiAccessSuccess(access));
     } catch (err) {
       this.onMidiAccessFailure(err);
     }
-    document
-      .getElementById('selectMidiDevice')
-      .addEventListener('change', () => {
-        const selectedDevice =
-          document.getElementById('selectMidiDevice').value;
-        const inputs = this.midiAccess.inputs.values();
-        const outputs = this.midiAccess.outputs.values();
-        for (
-          let output = outputs.next();
-          output && !output.done;
-          output = outputs.next()
-        )
-          if (output.value.name === selectedDevice) {
-            console.log(output.value);
-            output.value.send(new Uint8Array([144, 47, 12]));
-            output.value.send(new Uint8Array([144, 48, 12]));
-            output.value.send(new Uint8Array([144, 46, 12]));
-          }
-        for (
-          let input = inputs.next();
-          input && !input.done;
-          input = inputs.next()
-        )
-          if (input.value.name === selectedDevice) {
-            input.value.onmidimessage = (message) =>
-              this.handleMidiMessage(message);
-          } else {
-            input.value.onmidimessage = '';
-          }
-      });
+    document.getElementById('selectMidiDevice').addEventListener('change', () => {
+      const selectedDevice = document.getElementById('selectMidiDevice').value;
+      const inputs = this.midiAccess.inputs.values();
+      const outputs = this.midiAccess.outputs.values();
+      for (let output = outputs.next(); output && !output.done; output = outputs.next())
+        if (output.value.name === selectedDevice) {
+          output.value.send(new Uint8Array([144, 0, 12]));
+        }
+      for (let input = inputs.next(); input && !input.done; input = inputs.next())
+        if (input.value.name === selectedDevice) {
+          input.value.onmidimessage = (message) => this.handleMidiMessage(message);
+        } else {
+          input.value.onmidimessage = '';
+        }
+    });
     document.addEventListener('keydown', (event) => {
       event.stopPropagation();
       event.preventDefault();
@@ -316,7 +266,5 @@ window.startGame = () => {
   const game = new Game(canvas, scale);
   game.init();
 
-  ['start-game', 'pickle'].forEach(
-    (id) => (document.getElementById(id).style.display = 'none')
-  );
+  ['start-game', 'pickle'].forEach((id) => (document.getElementById(id).style.display = 'none'));
 };
