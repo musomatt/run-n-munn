@@ -2,6 +2,11 @@
 <html>
   <head>
     <title>run n munn</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
+      rel="stylesheet"
+    />
     <style type="text/css">
       body {
         display: flex;
@@ -15,11 +20,31 @@
         height: 675px;
         background-color: #eee;
       }
+
+      h1 {
+        font-family: 'Bungee Shade';
+      }
+
+      div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+        background-color: white;
+      }
     </style>
+    <script type="module" src="game.js"></script>
   </head>
   <body>
     <canvas></canvas>
-
-    <script type="module" src="game.js"></script>
+    <div id="start-game">
+      <h1>Run 'n' Munn</h1>
+      <button onclick="javascript:startGame();">Start Game</button>
+    </div>
   </body>
 </html>

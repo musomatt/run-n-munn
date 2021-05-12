@@ -150,10 +150,14 @@ class Game {
   };
 }
 
-const scale = window.devicePixelRatio;
-const canvas = document.getElementsByTagName('canvas')[0];
-canvas.width = Math.floor(WIDTH * scale);
-canvas.height = Math.floor(HEIGHT * scale);
+window.startGame = () => {
+  const scale = window.devicePixelRatio;
+  const canvas = document.getElementsByTagName('canvas')[0];
+  canvas.width = Math.floor(WIDTH * scale);
+  canvas.height = Math.floor(HEIGHT * scale);
 
-const game = new Game(canvas, scale);
-game.init();
+  const game = new Game(canvas, scale);
+  game.init();
+
+  document.getElementById('start-game').style.display = 'none';
+};
