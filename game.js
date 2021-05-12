@@ -259,7 +259,7 @@ class Game {
   };
 }
 
-window.startGame = () => {
+window.startGame = async () => {
   const scale = window.devicePixelRatio;
   const canvas = document.getElementsByTagName('canvas')[0];
   canvas.width = Math.floor(WIDTH * scale);
