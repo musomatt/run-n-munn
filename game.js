@@ -85,8 +85,6 @@ class Game {
 
   fireBullet = () => {
     const bulletDirection = this.keyToDirection();
-    console.log(bulletDirection);
-
     if (bulletDirection) {
       const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
       this.bullets.push(bullet);
