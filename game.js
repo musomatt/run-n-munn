@@ -1,7 +1,8 @@
-import { TILE_SIZE, WIDTH, HEIGHT } from './constants.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE } from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
+import { Vec2 } from './vec2.js';
 
 class Game {
   constructor(canvas, scale) {
@@ -16,6 +17,7 @@ class Game {
 
   update = (dt) => {
     this.munn.update(dt);
+    this.bullets.forEach((bullet) => bullet.move());
   };
 
   render = () => {
@@ -48,6 +50,15 @@ class Game {
     requestAnimationFrame(() => this.loop(last));
   };
 
+  keyToDirection = () => {
+    if (this.downKeys?.ArrowLeft) {
+      return new Vec2(-BULLET_SIZE, 0);
+    }
+    if (this.downKeys?.ArrowRight) {
+      return new Vec2(BULLET_SIZE, 0);
+    }
+  };
+
   init = () => {
     document.addEventListener('keydown', (event) => {
       event.stopPropagation();
@@ -57,9 +68,10 @@ class Game {
           this.downKeys.ArrowLeft = true;
           break;
         case 'ArrowRight':
-          const bullet = new Bullet(this.munn.position);
-          this.bullets.push(bullet);
           this.downKeys.ArrowRight = true;
+
+          const bullet = new Bullet(this.munn.position.clone(), this.keyToDirection());
+          this.bullets.push(bullet);
           break;
         case 'ArrowUp':
           this.downKeys.ArrowUp = true;

@@ -1,11 +1,15 @@
 import { BULLET_SIZE } from './constants.js';
 
 export class Bullet {
-  constructor(munnPosition) {
+  constructor(munnPosition, direction) {
     this.position = munnPosition;
     this.isDestroyed = false;
-    this.direction;
+    this.direction = direction;
   }
+
+  move = () => {
+    this.position = this.position.add(this.direction);
+  };
 
   draw = (ctx) => {
     ctx.fillStyle = '#92EC1D';
