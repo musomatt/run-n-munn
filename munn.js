@@ -78,10 +78,6 @@ export class Munn {
   };
 
   draw = (ctx) => {
-    ctx.fillStyle = '#333';
-    ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
-
-    // this.animateIdle.draw(ctx);
-    this.animateRun.draw(ctx);
+    this.animateRun.draw(ctx, this.position);
   };
 }
