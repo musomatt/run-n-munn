@@ -91,11 +91,6 @@ export class Munn {
   };
 
   draw = (ctx) => {
-    ctx.fillStyle = this.fillStyle;
-    ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
-
-    // this.animateIdle.draw(ctx);
-    this.animateRun.draw(ctx);
     if (this.isMoving) {
       this.animateRun.draw(ctx, this.position);
     } else {
