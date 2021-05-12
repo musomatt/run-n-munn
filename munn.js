@@ -11,7 +11,7 @@ const animationSettings = {
 
 export class Munn {
   constructor() {
-    this.position = new Vec2(randomNumber(0, WIDTH), 500);
+    this.position = new Vec2(randomNumber(0, WIDTH), 450);
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
@@ -40,10 +40,7 @@ export class Munn {
     const tileX = Math.floor(newPosition.x / TILE_SIZE);
     const tileY = Math.floor(newPosition.y / TILE_SIZE);
 
-    if (
-      !isInBounds(tileX, 0, Grid[0].length - 1) ||
-      !isInBounds(tileY, 0, Grid.length - 1)
-    ) {
+    if (!isInBounds(tileX, 0, Grid[0].length - 1) || !isInBounds(tileY, 0, Grid.length - 1)) {
       return false;
     }
 
@@ -79,10 +76,7 @@ export class Munn {
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
 
-    let newPosition = new Vec2(
-      this.position.x + this.velocity.x * dt,
-      this.position.y + this.velocity.y * dt
-    );
+    let newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
 
     if (!this.canMove(newPosition)) {
       newPosition = this.position;
