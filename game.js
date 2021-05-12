@@ -1,5 +1,5 @@
 import { Grid, GROUND, SPACE } from './grid.js';
-import { clamp } from './maths.js';
+import { isInBounds } from './maths.js';
 import { Vec2 } from './vec2.js';
 
 const WIDTH = 1200;
@@ -15,8 +15,17 @@ class Munn {
   }
 
   canMove = (newPosition) => {
-    const tile = vectorToTile(newPosition);
-    switch (tile) {
+    const tileX = Math.floor(newPosition.x / TILE_SIZE);
+    const tileY = Math.floor(newPosition.y / TILE_SIZE);
+
+    if (
+      !isInBounds(tileX, 0, Grid[0].length - 1) ||
+      !isInBounds(tileY, 0, Grid.length - 1)
+    ) {
+      return false;
+    }
+
+    switch (Grid[tileY][tileX]) {
       case GROUND:
         return false;
       case SPACE:
@@ -24,9 +33,19 @@ class Munn {
     }
   };
 
+  move = (dx, dy) => {
+    const newPosition = this.position.clone().add(new Vec2(dx, dy));
+    if (this.canMove(newPosition)) {
+      this.position = newPosition;
+    }
+  };
+
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
-    let newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
+    let newPosition = new Vec2(
+      this.position.x + this.velocity.x * dt,
+      this.position.y + this.velocity.y * dt
+    );
 
     if (!this.canMove(newPosition)) {
       newPosition = this.position;
@@ -40,15 +59,6 @@ class Munn {
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
   };
 }
-
-const vectorToTile = (vec) => {
-  const tileX = Math.floor(vec.x / TILE_SIZE);
-  const tileY = Math.floor(vec.y / TILE_SIZE);
-
-  const tileXClamp = clamp(tileX, 0, Grid[0].length - 1);
-  const tileYClamp = clamp(tileY, 0, Grid.length - 1);
-  return Grid[tileYClamp][tileXClamp];
-};
 
 class Game {
   constructor(canvas, scale) {
@@ -85,6 +95,24 @@ class Game {
   };
 
   init = () => {
+    document.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      switch (event.key) {
+        case 'ArrowLeft':
+          this.munn.move(-TILE_SIZE, 0);
+          break;
+        case 'ArrowRight':
+          this.munn.move(TILE_SIZE, 0);
+          break;
+        case 'ArrowUp':
+          this.munn.move(0, -TILE_SIZE);
+          break;
+        case 'ArrowDown':
+          this.munn.move(0, TILE_SIZE);
+          break;
+      }
+    });
     requestAnimationFrame(this.loop);
   };
 }

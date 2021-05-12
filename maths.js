@@ -1,9 +1,9 @@
-export const clamp = (value, min, max) => {
+export const isInBounds = (value, min, max) => {
   if (value < min) {
-    return min;
+    return false;
   }
   if (value > max) {
-    return max;
+    return false;
   }
-  return value;
+  return true;
 };
