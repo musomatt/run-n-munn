@@ -17,7 +17,7 @@ export class Munn {
       totalFrames: 2,
     });
 
-    this.idleAnimation.load('munn-sprite.png');
+    this.idleAnimation.load('munn-idle.png');
   }
 
   canMove = (newPosition) => {
