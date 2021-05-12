@@ -117,6 +117,7 @@ class Game {
   fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
+      this.audio.playCucmberThrow();
       const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
       this.munnBullets.push(bullet);
     }
