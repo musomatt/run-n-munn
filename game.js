@@ -74,6 +74,7 @@ class Game {
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
     this.munnBullets.forEach((bullet) => {
       if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
+        this.audio.playPickleCollision();
         this.boss.health -= 3;
         bullet.isDestroyed = true;
       }
@@ -116,6 +117,7 @@ class Game {
   fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
+      this.audio.playCucmberThrow();
       const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
       this.munnBullets.push(bullet);
     }
