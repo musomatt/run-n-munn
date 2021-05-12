@@ -4,6 +4,7 @@ import { Munn } from './munn.js';
 import { Boss } from './boss.js';
 import { Vec2 } from './vec2.js';
 import { Audio } from './audio.js';
+import initWasm from './pkg/engine.js';
 
 class Game {
   constructor(canvas, scale) {
@@ -117,8 +118,8 @@ class Game {
   fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
-      const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
-      this.munnBullets.push(bullet);
+      const bullet = new Bullet(this.munn.inner.position, bulletDirection);
+      this.bullets.push(bullet);
     }
   };
 
@@ -263,6 +264,8 @@ window.startGame = () => {
   const canvas = document.getElementsByTagName('canvas')[0];
   canvas.width = Math.floor(WIDTH * scale);
   canvas.height = Math.floor(HEIGHT * scale);
+
+  await initWasm();
 
   const game = new Game(canvas, scale);
   game.init();
