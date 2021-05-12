@@ -1,12 +1,4 @@
-import {
-  TILE_SIZE,
-  WIDTH,
-  HEIGHT,
-  BULLET_SIZE,
-  MOVEMENT_KEYS,
-  SHOOT_KEYS,
-  BOSS_SIZE,
-} from './constants.js';
+import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS, BOSS_SIZE, BULLET_DIRECTIONS } from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
@@ -23,12 +15,22 @@ class Game {
     this.downKeys = {};
     this.bullets = [];
     this.audio = new Audio();
+    this.munnBullets = [];
+    this.bossBullets = [];
+    this.stopBulletCountdown = 5;
   }
 
   update = (dt) => {
     this.munn.update(dt);
-    this.bullets.forEach((bullet) => bullet.move());
+    this.munnBullets.forEach((bullet) => bullet.move());
     this.checkBulletHitBoss();
+    if (this.stopBulletCountdown === 0) {
+      this.fireBossBullet();
+      this.stopBulletCountdown = 5;
+    } else {
+      this.stopBulletCountdown--;
+    }
+    this.bossBullets.forEach((bullet) => bullet.move());
   };
 
   render = () => {
@@ -37,13 +39,14 @@ class Game {
     if (this.boss.health > 0) {
       this.boss.draw(this.ctx);
     }
-    this.bullets.forEach((bullet, index, object) => {
+    this.munnBullets.forEach((bullet, index, object) => {
       if (bullet.isDestroyed) {
         object.splice(index, 1);
       } else {
         bullet.draw(this.ctx);
       }
     });
+    this.bossBullets.forEach((bullet) => bullet.draw(this.ctx));
   };
 
   loop = (last = -1) => {
@@ -67,13 +70,8 @@ class Game {
     const bossPosition = this.boss.position;
     const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
-    this.bullets.forEach((bullet) => {
-      if (
-        bullet.position.x > xRange.from &&
-        bullet.position.x < xRange.to &&
-        bullet.position.y > yRange.from &&
-        bullet.position.y < yRange.to
-      ) {
+    this.munnBullets.forEach((bullet) => {
+      if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
         this.boss.health -= 3;
         bullet.isDestroyed = true;
         console.log(this.boss.health);
@@ -87,39 +85,48 @@ class Game {
         return false;
       }
       if (this.downKeys?.ArrowUp) {
-        return new Vec2(-BULLET_SIZE, -BULLET_SIZE);
+        return BULLET_DIRECTIONS.upLeft;
       }
       if (this.downKeys?.ArrowDown) {
-        return new Vec2(-BULLET_SIZE, BULLET_SIZE);
+        return BULLET_DIRECTIONS.downLeft;
       }
-      return new Vec2(-BULLET_SIZE, 0);
+      return BULLET_DIRECTIONS.left;
     }
     if (this.downKeys?.ArrowRight) {
       if (this.downKeys?.ArrowLeft) {
         return false;
       }
       if (this.downKeys?.ArrowUp) {
-        return new Vec2(BULLET_SIZE, -BULLET_SIZE);
+        return BULLET_DIRECTIONS.upRight;
       }
       if (this.downKeys?.ArrowDown) {
-        return new Vec2(BULLET_SIZE, BULLET_SIZE);
+        return BULLET_DIRECTIONS.downRight;
       }
-      return new Vec2(BULLET_SIZE, 0);
+      return BULLET_DIRECTIONS.right;
     }
     if (this.downKeys?.ArrowDown) {
-      return new Vec2(0, BULLET_SIZE);
+      return BULLET_DIRECTIONS.down;
     }
     if (this.downKeys?.ArrowUp) {
-      return new Vec2(0, -BULLET_SIZE);
+      return BULLET_DIRECTIONS.up;
     }
   };
 
-  fireBullet = () => {
+  fireMunnBullet = () => {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
       const bullet = new Bullet(this.munn.position.clone(), bulletDirection);
-      this.bullets.push(bullet);
+      this.munnBullets.push(bullet);
     }
+  };
+
+  fireBossBullet = () => {
+    const directionKeys = Object.keys(BULLET_DIRECTIONS);
+    const directionKey = directionKeys[Math.floor(Math.random() * directionKeys.length)];
+    const bulletDirection = BULLET_DIRECTIONS[directionKey];
+    const bossCentre = new Vec2(this.boss.position.x + BOSS_SIZE / 2, this.boss.position.y + BOSS_SIZE / 2);
+    const bullet = new Bullet(bossCentre, bulletDirection, '#ed4351');
+    this.bossBullets.push(bullet);
   };
 
   actionKeys = () => {
@@ -145,7 +152,7 @@ class Game {
       }
     }
     if (SHOOT_KEYS.some((r) => activeDownKeys.includes(r))) {
-      this.fireBullet();
+      this.fireMunnBullet();
     }
   };
 
