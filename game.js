@@ -18,6 +18,7 @@ class Game {
     this.munnBullets = [];
     this.bossBullets = [];
     this.stopBulletCountdown = 5;
+    this.initialCountDownForBullets = 60;
     this.access;
   }
 
@@ -26,9 +27,11 @@ class Game {
     this.boss.update(dt);
     this.munnBullets.forEach((bullet) => bullet.move());
     this.checkBulletHitBoss();
-    if (this.stopBulletCountdown === 0) {
+    if (this.stopBulletCountdown === 0 && this.initialCountDownForBullets === 0) {
       this.fireBossBullet();
       this.stopBulletCountdown = 5;
+    } else if (this.initialCountDownForBullets > 0) {
+      this.initialCountDownForBullets--;
     } else {
       this.stopBulletCountdown--;
     }
