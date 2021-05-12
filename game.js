@@ -1,8 +1,17 @@
-import { TILE_SIZE, WIDTH, HEIGHT, BULLET_SIZE, MOVEMENT_KEYS, SHOOT_KEYS, BOSS_SIZE } from './constants.js';
+import {
+  TILE_SIZE,
+  WIDTH,
+  HEIGHT,
+  BULLET_SIZE,
+  MOVEMENT_KEYS,
+  SHOOT_KEYS,
+  BOSS_SIZE,
+} from './constants.js';
 import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
 import { Vec2 } from './vec2.js';
+import { Audio } from './audio.js';
 
 class Game {
   constructor(canvas, scale) {
@@ -13,6 +22,7 @@ class Game {
     this.boss = new Boss();
     this.downKeys = {};
     this.bullets = [];
+    this.audio = new Audio();
   }
 
   update = (dt) => {
@@ -58,7 +68,12 @@ class Game {
     const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
     const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
     this.bullets.forEach((bullet) => {
-      if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
+      if (
+        bullet.position.x > xRange.from &&
+        bullet.position.x < xRange.to &&
+        bullet.position.y > yRange.from &&
+        bullet.position.y < yRange.to
+      ) {
         this.boss.health -= 3;
         bullet.isDestroyed = true;
         console.log(this.boss.health);
@@ -144,6 +159,7 @@ class Game {
         this.actionKeys();
       }
     });
+
     document.addEventListener('keyup', (event) => {
       event.stopPropagation();
       event.preventDefault();
@@ -153,6 +169,9 @@ class Game {
         this.downKeys[event.key] = false;
       }
     });
+
+    // this.audio.startBackgroundMusic();
+
     requestAnimationFrame(this.loop);
   };
 }
