@@ -11,13 +11,13 @@ export class Munn {
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
 
-    this.sprite = new SpriteLoader({
+    this.idleAnimation = new SpriteLoader({
       speed: 25,
       frameSize: new Vec2(100, 100),
       totalFrames: 2,
     });
 
-    this.sprite.load('munn-sprite.png');
+    this.idleAnimation.load('munn-sprite.png');
   }
 
   canMove = (newPosition) => {
@@ -66,6 +66,6 @@ export class Munn {
     ctx.fillStyle = '#333';
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
 
-    this.sprite.draw(ctx);
+    this.idleAnimation.draw(ctx);
   };
 }
