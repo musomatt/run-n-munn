@@ -1,6 +1,6 @@
 import { TILE_SIZE } from './constants.js';
 import { Grid, GROUND, SPACE } from './grid.js';
-import { isInBounds } from './maths.js';
+import { isInBounds, randomNumber } from './maths.js';
 import { Vec2 } from './vec2.js';
 import { SpriteLoader } from './sprite.js';
 
@@ -11,7 +11,7 @@ const animationSettings = {
 
 export class Munn {
   constructor() {
-    this.position = new Vec2(0, 0);
+    this.position = new Vec2(randomNumber(0, 500), 500);
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
