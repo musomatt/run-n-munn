@@ -1,4 +1,5 @@
 import { Grid, GROUND, SPACE } from './grid.js';
+import { clamp } from './maths.js';
 import { Vec2 } from './vec2.js';
 
 const WIDTH = 1200;
@@ -25,12 +26,13 @@ class Munn {
 
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
-    const newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
-    if (this.canMove(newPosition)) {
-      this.position = newPosition;
-    } else {
-      console.log('boo');
+    let newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
+
+    if (!this.canMove(newPosition)) {
+      newPosition = this.position;
+      this.velocity = new Vec2(0, 0);
     }
+    this.position.copy(newPosition);
   };
 
   draw = (ctx) => {
@@ -42,7 +44,10 @@ class Munn {
 const vectorToTile = (vec) => {
   const tileX = Math.floor(vec.x / TILE_SIZE);
   const tileY = Math.floor(vec.y / TILE_SIZE);
-  return Grid[tileY][tileX];
+
+  const tileXClamp = clamp(tileX, 0, Grid[0].length - 1);
+  const tileYClamp = clamp(tileY, 0, Grid.length - 1);
+  return Grid[tileYClamp][tileXClamp];
 };
 
 class Game {
