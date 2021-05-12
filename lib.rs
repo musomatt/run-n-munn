@@ -141,13 +141,11 @@ impl Bullet {
 
     #[wasm_bindgen(constructor)]
     pub fn new(munn_position: Vec2, direction: Vec2) -> Self {
-        let position = Vec2 {
-            x: munn_position.x + TILE_SIZE as f32 / 2.0,
-            y: munn_position.y + TILE_SIZE as f32 / 2.0,
-        };
-
         Self {
-            position: position,
+            position: Vec2 {
+                x: munn_position.x + TILE_SIZE as f32 / 2.0,
+                y: munn_position.y + TILE_SIZE as f32 / 2.0,
+            },
             is_destroyed: false,
             direction,
         }

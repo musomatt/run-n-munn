@@ -23,7 +23,6 @@ class Game {
     this.munn = new Munn();
     this.boss = new Boss();
     this.downKeys = {};
-    this.bullets = [];
     this.audio = new Audio();
     this.munnBullets = [];
     this.bossBullets = [];
@@ -52,7 +51,7 @@ class Game {
       this.boss.draw(this.ctx);
     }
     this.munnBullets.forEach((bullet, index, object) => {
-      if (bullet.isDestroyed) {
+      if (bullet.inner.is_destroyed) {
         object.splice(index, 1);
       } else {
         bullet.draw(this.ctx);
@@ -91,7 +90,8 @@ class Game {
       ) {
         this.audio.playPickleCollision();
         this.boss.health -= 3;
-        bullet.isDestroyed = true;
+        bullet.inner.is_destroyed = true;
+        console.log(this.boss.health);
       }
     });
   };
@@ -133,7 +133,7 @@ class Game {
     const bulletDirection = this.keyToDirection();
     if (bulletDirection) {
       const bullet = new Bullet(this.munn.inner.position, bulletDirection);
-      this.bullets.push(bullet);
+      this.munnBullets.push(bullet);
     }
   };
 
