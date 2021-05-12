@@ -41,4 +41,8 @@ export class Boss {
       BOSS_SIZE
     );
   };
+
+  takeHit = (value) => {
+    this.health -= value;
+  };
 }

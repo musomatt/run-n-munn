@@ -15,8 +15,9 @@ export class Munn {
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
+    this.health = 15;
+    this.fillStyle = '#333';
     this.isMoving = false;
-
     this.loadAnimations();
   }
 
@@ -90,10 +91,23 @@ export class Munn {
   };
 
   draw = (ctx) => {
+    ctx.fillStyle = this.fillStyle;
+    ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
+
+    // this.animateIdle.draw(ctx);
+    this.animateRun.draw(ctx);
     if (this.isMoving) {
       this.animateRun.draw(ctx, this.position);
     } else {
       this.animateIdle.draw(ctx, this.position);
     }
+  };
+
+  takeHit = (value) => {
+    this.health -= value;
+    this.fillStyle = '#BF40BF';
+    setTimeout(() => {
+      this.fillStyle = '#333';
+    }, 300);
   };
 }

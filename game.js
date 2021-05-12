@@ -26,8 +26,9 @@ class Game {
     this.munn.update(dt);
     this.boss.update(dt);
     this.munnBullets.forEach((bullet) => bullet.move());
-    this.checkBulletHitBoss();
-    if (this.stopBulletCountdown === 0 && this.initialCountDownForBullets === 0) {
+    this.checkBulletHit(this.boss, this.munnBullets);
+    this.checkBulletHit(this.munn, this.bossBullets);
+    if (this.stopBulletCountdown === 0) {
       this.fireBossBullet();
       this.stopBulletCountdown = 5;
     } else if (this.initialCountDownForBullets > 0) {
@@ -71,15 +72,23 @@ class Game {
     requestAnimationFrame(() => this.loop(last));
   };
 
-  checkBulletHitBoss = () => {
-    const bossPosition = this.boss.position;
-    const xRange = { from: bossPosition.x, to: bossPosition.x + BOSS_SIZE };
-    const yRange = { from: bossPosition.y, to: bossPosition.y + BOSS_SIZE };
-    this.munnBullets.forEach((bullet) => {
+  checkBulletHit = (target, attackingBullets) => {
+    const xRange = { from: target.position.x };
+    const yRange = { from: target.position.y };
+    if (target.hasOwnProperty('isJumping')) {
+      xRange.to = target.position.x + TILE_SIZE;
+      yRange.to = target.position.y + TILE_SIZE;
+    } else {
+      xRange.to = target.position.x + BOSS_SIZE;
+      yRange.to = target.position.y + BOSS_SIZE;
+    }
+
+    attackingBullets.forEach((bullet) => {
       if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
-        this.audio.playPickleCollision();
-        this.boss.health -= 3;
+        console.log(target);
+        target.takeHit(3);
         bullet.isDestroyed = true;
+        console.log(target.health);
       }
     });
   };
@@ -127,6 +136,9 @@ class Game {
   };
 
   fireBossBullet = () => {
+    if (this.boss.health < 0) {
+      return;
+    }
     const directionKeys = Object.keys(BULLET_DIRECTIONS);
     const directionKey = directionKeys[Math.floor(Math.random() * directionKeys.length)];
     const bulletDirection = BULLET_DIRECTIONS[directionKey];
@@ -227,7 +239,10 @@ class Game {
       const outputs = this.midiAccess.outputs.values();
       for (let output = outputs.next(); output && !output.done; output = outputs.next())
         if (output.value.name === selectedDevice) {
-          output.value.send(new Uint8Array([144, 0, 12]));
+          console.log(output.value);
+          output.value.send(new Uint8Array([144, 47, 12]));
+          output.value.send(new Uint8Array([144, 48, 12]));
+          output.value.send(new Uint8Array([144, 46, 12]));
         }
       for (let input = inputs.next(); input && !input.done; input = inputs.next())
         if (input.value.name === selectedDevice) {
