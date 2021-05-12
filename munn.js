@@ -16,6 +16,7 @@ export class Munn {
       frameSize: new Vec2(100, 100),
       totalFrames: 2,
     });
+
     this.sprite.load('munn-sprite.png');
   }
 
@@ -64,5 +65,7 @@ export class Munn {
   draw = (ctx) => {
     ctx.fillStyle = '#333';
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
+
+    this.sprite.draw(ctx);
   };
 }
