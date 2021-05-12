@@ -85,10 +85,9 @@ class Game {
 
     attackingBullets.forEach((bullet) => {
       if (bullet.position.x > xRange.from && bullet.position.x < xRange.to && bullet.position.y > yRange.from && bullet.position.y < yRange.to) {
-        console.log(target);
+        this.audio.playPickleCollision();
         target.takeHit(3);
         bullet.isDestroyed = true;
-        console.log(target.health);
       }
     });
   };

@@ -7,7 +7,7 @@ export class Audio {
     this.pickleCollision = document.createElement('audio');
     this.pickleCollision.src = 'pickleshot.mp3';
     this.pickleCollision.loop = false;
-    this.pickleCollision.volume = 0.2;
+    this.pickleCollision.volume = 0.4;
 
     this.cucumberThrow = document.createElement('audio');
     this.cucumberThrow.src = 'cucumberthrow.mp3';
