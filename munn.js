@@ -4,6 +4,11 @@ import { isInBounds } from './maths.js';
 import { Vec2 } from './vec2.js';
 import { SpriteLoader } from './sprite.js';
 
+const animationSettings = {
+  speed: 15,
+  frameSize: new Vec2(100, 100),
+};
+
 export class Munn {
   constructor() {
     this.position = new Vec2(0, 0);
@@ -11,13 +16,22 @@ export class Munn {
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
 
-    this.idleAnimation = new SpriteLoader({
-      speed: 15,
-      frameSize: new Vec2(100, 100),
+    this.loadAnimations();
+  }
+
+  loadAnimations() {
+    this.animateIdle = new SpriteLoader({
+      ...animationSettings,
       totalFrames: 2,
     });
 
-    this.idleAnimation.load('munn-idle.png');
+    this.animateRun = new SpriteLoader({
+      ...animationSettings,
+      totalFrames: 4,
+    });
+
+    this.animateIdle.load('munn-idle.png');
+    this.animateRun.load('munn-runn.png');
   }
 
   canMove = (newPosition) => {
@@ -66,6 +80,7 @@ export class Munn {
     ctx.fillStyle = '#333';
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
 
-    this.idleAnimation.draw(ctx);
+    // this.animateIdle.draw(ctx);
+    this.animateRun.draw(ctx);
   };
 }
