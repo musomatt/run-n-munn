@@ -1,4 +1,5 @@
 import { TILE_SIZE, WIDTH, HEIGHT } from './constants.js';
+import { Bullet } from './bullet.js';
 import { Munn } from './munn.js';
 import { Boss } from './boss.js';
 
@@ -10,6 +11,7 @@ class Game {
     this.munn = new Munn();
     this.boss = new Boss();
     this.downKeys = {};
+    this.bullets = [];
   }
 
   update = (dt) => {
@@ -20,6 +22,7 @@ class Game {
     this.ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.munn.draw(this.ctx);
     this.boss.draw(this.ctx);
+    this.bullets.forEach((bullet) => bullet.draw(this.ctx));
   };
 
   loop = (last = -1) => {
@@ -48,6 +51,8 @@ class Game {
           this.downKeys.ArrowLeft = true;
           break;
         case 'ArrowRight':
+          const bullet = new Bullet(this.munn.position);
+          this.bullets.push(bullet);
           this.downKeys.ArrowRight = true;
           break;
         case 'ArrowUp':
@@ -69,7 +74,6 @@ class Game {
           this.munn.move(0, TILE_SIZE);
           break;
       }
-      console.log('key down: ', this.downKeys);
     });
     document.addEventListener('keyup', (event) => {
       event.stopPropagation();
@@ -88,7 +92,6 @@ class Game {
           this.downKeys.ArrowDown = false;
           break;
       }
-      console.log('key up: ', this.downKeys);
     });
     requestAnimationFrame(this.loop);
   };
