@@ -12,7 +12,7 @@ export class Munn {
     this.isJumping = false;
 
     this.idleAnimation = new SpriteLoader({
-      speed: 25,
+      speed: 15,
       frameSize: new Vec2(100, 100),
       totalFrames: 2,
     });
