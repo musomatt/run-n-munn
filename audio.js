@@ -1,8 +1,8 @@
 export class Audio {
   constructor() {
     this.backgroundAudioElement = document.createElement('audio');
-    this.backgroundAudioElement.src = 'runn-n-munn.mp3';
-    this.backgroundAudioElement.volume = 0.4;
+    this.backgroundAudioElement.src = 'runn-n-munn-bg.mp3';
+    this.backgroundAudioElement.volume = 0.1;
   }
 
   startBackgroundMusic = () => {

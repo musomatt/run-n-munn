@@ -170,7 +170,7 @@ class Game {
       }
     });
 
-    // this.audio.startBackgroundMusic();
+    this.audio.startBackgroundMusic();
 
     requestAnimationFrame(this.loop);
   };
