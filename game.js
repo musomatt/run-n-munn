@@ -1,3 +1,4 @@
+import { Grid, GROUND, SPACE } from './grid.js';
 import { Vec2 } from './vec2.js';
 
 const WIDTH = 1200;
@@ -8,16 +9,41 @@ class Munn {
   constructor() {
     this.position = new Vec2(0, 0);
     this.velocity = new Vec2(0, 0);
-    this.gravity = new Vec2(0, 2);
+    this.gravity = new Vec2(0, 200);
+    this.isJumping = false;
   }
 
-  update(dt) {}
+  canMove = (newPosition) => {
+    const tile = vectorToTile(newPosition);
+    switch (tile) {
+      case GROUND:
+        return false;
+      case SPACE:
+        return true;
+    }
+  };
 
-  draw(ctx) {
+  update = (dt) => {
+    this.velocity.add(new Vec2(0, this.gravity.y * dt));
+    const newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
+    if (this.canMove(newPosition)) {
+      this.position = newPosition;
+    } else {
+      console.log('boo');
+    }
+  };
+
+  draw = (ctx) => {
     ctx.fillStyle = '#333';
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
-  }
+  };
 }
+
+const vectorToTile = (vec) => {
+  const tileX = Math.floor(vec.x / TILE_SIZE);
+  const tileY = Math.floor(vec.y / TILE_SIZE);
+  return Grid[tileY][tileX];
+};
 
 class Game {
   constructor(canvas, scale) {
@@ -32,6 +58,7 @@ class Game {
   };
 
   render = () => {
+    this.ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.munn.draw(this.ctx);
   };
 
