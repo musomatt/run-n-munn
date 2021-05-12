@@ -2,7 +2,7 @@ import { TILE_SIZE } from './constants.js';
 import { Grid, GROUND, SPACE } from './grid.js';
 import { isInBounds } from './maths.js';
 import { Vec2 } from './vec2.js';
-import { SpriteLoader } from './sprite';
+import { SpriteLoader } from './sprite.js';
 
 export class Munn {
   constructor() {
