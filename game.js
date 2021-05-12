@@ -22,7 +22,13 @@ class Game {
     this.ctx.clearRect(0, 0, WIDTH, HEIGHT);
     this.munn.draw(this.ctx);
     this.boss.draw(this.ctx);
-    this.bullets.forEach((bullet) => bullet.draw(this.ctx));
+    this.bullets.forEach((bullet, index, object) => {
+      if (bullet.isDestroyed) {
+        object.splice(index, 1);
+      } else {
+        bullet.draw(this.ctx);
+      }
+    });
   };
 
   loop = (last = -1) => {
