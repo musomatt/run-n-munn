@@ -11,4 +11,8 @@ export class Boss {
     ctx.fillStyle = '#B3A712';
     ctx.fillRect(this.position.x, this.position.y, BOSS_SIZE, BOSS_SIZE);
   };
+
+  takeHit = (value) => {
+    this.health -= value;
+  };
 }

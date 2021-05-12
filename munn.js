@@ -15,6 +15,8 @@ export class Munn {
     this.velocity = new Vec2(0, 0);
     this.gravity = new Vec2(0, 200);
     this.isJumping = false;
+    this.health = 15;
+    this.fillStyle = '#333';
 
     this.loadAnimations();
   }
@@ -39,10 +41,7 @@ export class Munn {
     const tileX = Math.floor(newPosition.x / TILE_SIZE);
     const tileY = Math.floor(newPosition.y / TILE_SIZE);
 
-    if (
-      !isInBounds(tileX, 0, Grid[0].length - 1) ||
-      !isInBounds(tileY, 0, Grid.length - 1)
-    ) {
+    if (!isInBounds(tileX, 0, Grid[0].length - 1) || !isInBounds(tileY, 0, Grid.length - 1)) {
       return false;
     }
 
@@ -64,10 +63,7 @@ export class Munn {
   update = (dt) => {
     this.velocity.add(new Vec2(0, this.gravity.y * dt));
 
-    let newPosition = new Vec2(
-      this.position.x + this.velocity.x * dt,
-      this.position.y + this.velocity.y * dt
-    );
+    let newPosition = new Vec2(this.position.x + this.velocity.x * dt, this.position.y + this.velocity.y * dt);
 
     if (!this.canMove(newPosition)) {
       newPosition = this.position;
@@ -78,10 +74,18 @@ export class Munn {
   };
 
   draw = (ctx) => {
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = this.fillStyle;
     ctx.fillRect(this.position.x, this.position.y, TILE_SIZE, TILE_SIZE);
 
     // this.animateIdle.draw(ctx);
     this.animateRun.draw(ctx);
+  };
+
+  takeHit = (value) => {
+    this.health -= value;
+    this.fillStyle = '#BF40BF';
+    setTimeout(() => {
+      this.fillStyle = '#333';
+    }, 300);
   };
 }
